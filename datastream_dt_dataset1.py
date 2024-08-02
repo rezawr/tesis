@@ -156,7 +156,7 @@ def preprocess(str):
         strWithoutNum =  re.sub(r"\d+", "", text)
         text = strWithoutNum.translate(strWithoutNum.maketrans("","",string.punctuation)).strip()
         text = stopword.remove(text)
-        # text = stemmer.stem(text)
+        text = stemmer.stem(text)
         return text
     except Exception as e:
         print(str)
@@ -223,10 +223,10 @@ def validation(stop_event, valid_event, thread_num):
             time.sleep(1)
 
 def train(stop_event):
-    global y, textclassifier, run_classification, X_train, y_train, new_vectorize, new_svd, new_scaler
+    global zz, textclassifier, run_classification, X_train, y_train, new_vectorize, new_svd, new_scaler
     while not stop_event.is_set():
         try :
-            y += 1
+            zz += 1
             priv_X_train = X_train
             priv_y_train = y_train
             # if len(priv_X_train) > 50000:
@@ -241,7 +241,7 @@ def train(stop_event):
             y = priv_y_train.values
             print("===>>> tfidf done")
 
-            svd = TruncatedSVD(n_components=100, random_state=42)  # Adjust n_components based on your specific needs
+            svd = TruncatedSVD(n_components=512, random_state=42)  # Adjust n_components based on your specific needs
             X_reduced = svd.fit_transform(X)
             # X = X.toarray()
             print("===>>> toarry done")
@@ -301,7 +301,7 @@ def record_performance(stop_event):
 
 if __name__ == "__main__":
     x = 1
-    y = 1
+    zz = 1
     z = 1
     df = pd.read_csv('datasets/dataset1/data.csv', encoding='latin-1')
     df['hatespeech'] = df.apply(simplifiedClass, axis=1)
@@ -330,7 +330,7 @@ if __name__ == "__main__":
     y = y_train.values
     print("===>>> tfidf done")
 
-    svd = TruncatedSVD(n_components=100, random_state=42)  # Adjust n_components based on your specific needs
+    svd = TruncatedSVD(n_components=512, random_state=42)  # Adjust n_components based on your specific needs
     X_reduced = svd.fit_transform(X)
     # X = X.toarray()
     print("===>>> toarry done")

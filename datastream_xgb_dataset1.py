@@ -158,7 +158,7 @@ def preprocess(str):
         strWithoutNum =  re.sub(r"\d+", "", text)
         text = strWithoutNum.translate(strWithoutNum.maketrans("","",string.punctuation)).strip()
         text = stopword.remove(text)
-        # text = stemmer.stem(text)
+        text = stemmer.stem(text)
         return text
     except Exception as e:
         print(str)

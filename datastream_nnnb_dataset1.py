@@ -272,10 +272,10 @@ def build_feature_extractor_model():
     return feature_extractor, X_train_oversampled, y_train_oversampled
 
 def train(stop_event):
-    global y, textclassifier, run_classification, extractor
+    global zz, textclassifier, run_classification, extractor
     while not stop_event.is_set():
         try :
-            y += 1
+            zz += 1
             extractor, x_train_oversampled, y_train_oversampled = build_feature_extractor_model()
             X_train_nn = extractor.predict(x_train_oversampled)
             tmp_classifier = GridSearchCV(MultinomialNB(), parameters, cv=5, scoring='accuracy')
@@ -324,7 +324,7 @@ def record_performance(stop_event):
 
 if __name__ == "__main__":
     x = 1
-    y = 1
+    zz = 1
     z = 1
     df = pd.read_csv('datasets/dataset1/data.csv', encoding='latin-1')
     df['hatespeech'] = df.apply(simplifiedClass, axis=1)

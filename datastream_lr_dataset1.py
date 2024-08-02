@@ -11,7 +11,6 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import json
 
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline, make_pipeline
@@ -30,6 +29,7 @@ from threading import Lock
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+import json
 
 
 # ============================================================== FUNCTION TO AUGMENTED THE DATA ==============================================================
@@ -156,7 +156,7 @@ def preprocess(str):
         strWithoutNum =  re.sub(r"\d+", "", text)
         text = strWithoutNum.translate(strWithoutNum.maketrans("","",string.punctuation)).strip()
         text = stopword.remove(text)
-        # text = stemmer.stem(text)
+        text = stemmer.stem(text)
         return text
     except Exception as e:
         print(str)
@@ -189,7 +189,7 @@ def validation(stop_event, valid_event, thread_num):
             aug_data = augment_data(ori_data, num_augmentations=1)
             data = aug_data
 
-        # data['tweet'] = data['tweet'].apply(preprocess)
+        data['tweet'] = data['tweet'].apply(preprocess)
         # Transforming new data using the fitted vectorizer
         data_vect = new_vectorize.transform(data['tweet'])
         data_reduced = new_svd.transform(data_vect)
@@ -211,6 +211,11 @@ def validation(stop_event, valid_event, thread_num):
                 result['f1'].append(f1_score(data['hatespeech'], nb_pred, average='weighted', zero_division=0))
                 result['precision'].append(precision_score(data['hatespeech'], nb_pred, average='weighted', zero_division=0))
                 result['recall'].append(recall_score(data['hatespeech'], nb_pred, average='weighted', zero_division=0))
+                
+                if precision_score(data['hatespeech'], nb_pred, average='weighted', zero_division=0) < 0.3:
+                    print(result)
+                    stop_event.set()
+                    exit()
             
             # print(result)
         except Exception as e :
@@ -223,10 +228,10 @@ def validation(stop_event, valid_event, thread_num):
             time.sleep(1)
 
 def train(stop_event):
-    global y, textclassifier, run_classification, X_train, y_train, new_vectorize, new_svd, new_scaler
+    global zz, textclassifier, run_classification, X_train, y_train, new_vectorize, new_svd, new_scaler
     while not stop_event.is_set():
         try :
-            y += 1
+            zz += 1
             with data_lock:
                 priv_X_train = X_train
                 priv_y_train = y_train
@@ -302,7 +307,7 @@ def record_performance(stop_event):
 
 if __name__ == "__main__":
     x = 1
-    y = 1
+    zz = 1
     z = 1
     df = pd.read_csv('datasets/dataset1/data.csv', encoding='latin-1')
     df['hatespeech'] = df.apply(simplifiedClass, axis=1)
